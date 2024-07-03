@@ -5,7 +5,7 @@ export interface IMovie {
   id: number;
   title?: string;
   name?: string;
-  original_title: string;
+  original_title?: string;
   overview: string;
   poster_path: string;
   media_type: string;
@@ -18,6 +18,7 @@ export interface IMovie {
   video: boolean;
   vote_average: number;
   vote_count: number;
+  original_name?: string;
 }
 
 export interface IMoviesContext {

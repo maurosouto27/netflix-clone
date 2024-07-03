@@ -1,5 +1,5 @@
 export interface Config {
-  images: Images;
+  images: ImagesConfig;
   change_keys: string[];
 }
 

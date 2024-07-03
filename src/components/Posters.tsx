@@ -18,9 +18,11 @@ const Posters = ({ movies }: PosterProps) => {
           return (
             <Card
               key={id}
+              id={id}
               poster={poster_path}
               releaseYear={release_date || first_air_date || ""}
               title={title || name || ""}
+              isMovie={!!title}
             />
           );
         }

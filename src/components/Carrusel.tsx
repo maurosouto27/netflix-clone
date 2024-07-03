@@ -94,6 +94,7 @@ const Carrusel = ({ movies, sectionTitle }: Props) => {
                   title={title || name || ""}
                   id={id}
                   releaseDate={release_date || first_air_date || ""}
+                  isMovie={!!title}
                 />
               );
             }

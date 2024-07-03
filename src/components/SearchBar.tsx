@@ -1,8 +1,8 @@
 import { ChangeEvent, FormEvent, useContext, useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDebounce } from "use-debounce";
 import { MoviesContext } from "../contexts/MoviesContext";
-import { searchMovies } from "../services/movies";
+import { searchMovies, searchSeries } from "../services/movies";
 import { IoIosSearch } from "react-icons/io";
 
 const SearchBar = () => {
@@ -10,27 +10,20 @@ const SearchBar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [searchQuery] = useDebounce(search, 600);
 
   useEffect(() => {
-    if (location.pathname === "/" && searchParams.get("q")) {
-      navigate(`/search${location.search}`, { replace: true });
-    }
-
-    if (location.pathname === "/search" && !searchParams.get("q")) {
-      navigate("/");
-    }
-
     if (!searchQuery) return;
 
     const debouncedSearch = async () => {
       try {
-        const movies = await searchMovies(searchQuery);
-        setMovies(movies);
+        const [movies, series] = await Promise.all([
+          searchMovies(searchQuery),
+          searchSeries(searchQuery),
+        ]);
+        setMovies([...movies, ...series]);
       } catch (e) {
-        console.error(e);
         setError(true);
       } finally {
         setSearchLoading(false);
@@ -38,8 +31,7 @@ const SearchBar = () => {
     };
 
     debouncedSearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]); // if we add the rest dependencies, the debounce function wont work correctly
+  }, [searchQuery, setError, setMovies, setSearchLoading]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -49,9 +41,10 @@ const SearchBar = () => {
     if (!value) {
       searchParams.delete("q");
       setSearchParams(searchParams);
+      navigate("/");
     } else {
-      navigate("/search");
       setSearchParams({ q: value });
+      navigate(`/search?q=${value}`, { replace: true });
     }
   };
 
