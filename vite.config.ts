@@ -10,6 +10,13 @@ export default ({ mode }: { mode: string }) => {
     plugins: [react()],
     server: {
       proxy: {
+        "/.well-known/acme-challenge/": {
+          target: "https://netflix-clone-alpha-black.vercel.app", // O el puerto que estés usando localmente
+          bypass: (req) => {
+            return req.url;
+          },
+        },
+        // Configuración existente para la API de TMDB
         "/api": {
           target: process.env.VITE_API_BASE_URL,
           changeOrigin: true,
